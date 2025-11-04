@@ -27,7 +27,9 @@ class DiabetesDataCleaner:
     def explore_data(self):
         print("\n--- PHASE 1: Data Exploration ---")
         print(self.df.info())
-        print("\nDescriptive Statistics:\n", self.df.describe().T)
+        print(self.df.isnull().sum())
+
+        print("\nDescriptive Statistics:\n", self.df.describe().T)        
 
         plt.figure(figsize=(6, 4))
         sns.countplot(x='Class', data=self.df)
