@@ -7,6 +7,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.feature_selection import SelectKBest, mutual_info_classif
 from imblearn.over_sampling import SMOTE
+from sklearn.decomposition import PCA
 from collections import Counter
 import os
 
@@ -118,15 +119,48 @@ class DiabetesDataCleaner:
         print("StandardScaler applied.")
         return self.df
 
-    def reduce_data(self, k_features=10):
+    def reduce_data(self, k_features=10, apply_pca=False, pca_variance=0.95):
         print("\n--- PHASE 4: Feature Selection & Dimensionality Reduction ---")
+        
+        # Separate features and target
         X = self.df.drop('Class', axis=1)
         y = self.df['Class']
+        
+        # --- Correlation Analysis ---
+        plt.figure(figsize=(14, 12))
+        correlation_matrix = self.df.corr()
+        sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm', linewidths=.5)
+        plt.title("Correlation Matrix of All Features")
+        plt.show()
+        
+        # --- Feature Selection ---
         selector = SelectKBest(score_func=mutual_info_classif, k=k_features)
         selector.fit(X, y)
-        selected_features = X.columns[selector.get_support()]
-        print("Selected Features:", list(selected_features))
-        return self.df[selected_features], y
+        
+        # Sort features by importance (most predictive first)
+        feature_scores = pd.Series(selector.scores_, index=X.columns).sort_values(ascending=False)
+        selected_features = feature_scores.head(k_features).index.tolist()
+        print("Selected Features (most predictive first):", selected_features)
+        
+        # Create reduced DataFrame with selected features + target
+        df_reduced = self.df[selected_features + ['Class']]
+        
+        # --- Optional PCA for Dimensionality Reduction ---
+        if apply_pca:
+            numeric_cols = df_reduced.drop('Class', axis=1).columns
+            scaler = StandardScaler()
+            X_scaled = scaler.fit_transform(df_reduced[numeric_cols])
+            pca = PCA(n_components=pca_variance)
+            X_pca = pca.fit_transform(X_scaled)
+            print(f"PCA applied: {pca.n_components_} components explain {sum(pca.explained_variance_ratio_):.2f} of variance.")
+            
+            # Convert PCA output back to DataFrame
+            df_pca = pd.DataFrame(X_pca, columns=[f"PC{i+1}" for i in range(X_pca.shape[1])])
+            df_pca['Class'] = df_reduced['Class'].values
+            df_reduced = df_pca
+        
+        # Return reduced DataFrame and target
+        return df_reduced.drop('Class', axis=1), df_reduced['Class']
 
     def balance_data(self, X, y):
         print("\n--- PHASE 5: Data Balancing Using SMOTE ---")
