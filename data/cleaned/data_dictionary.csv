@@ -1,0 +1,15 @@
+Feature,Type,Description,Notes
+Pregnant,int,Number of times pregnant,Raw numeric
+Glucose,float,Plasma glucose concentration (mg/dL),Imputed and scaled
+Diastolic_BP,float,Diastolic blood pressure (mm Hg),Imputed and scaled
+Skin_Fold,float,Triceps skin fold thickness (mm),Imputed and scaled
+Serum_Insulin,float,2-Hour serum insulin (mu U/ml),Imputed and scaled
+BMI,float,Body mass index (kg/m²),Imputed and scaled
+Diabetes_Pedigree,float,Diabetes pedigree function,Scaled
+Age,int,Age in years,Scaled
+Class,int,"Target variable (0 = non-diabetic, 1 = diabetic)",Balanced
+BMICategory,int,BMI category: Underweight/Normal/Overweight/Obese (encoded),Ordinal encoding
+GlucoseCategory,int,Glucose level category: Normal/Prediabetes/Diabetes (encoded),Ordinal encoding
+AgeGroup_Young,int,One-hot encoded AgeGroup column (Young),Nominal encoding
+AgeGroup_Middle-aged,int,One-hot encoded AgeGroup column (Middle-aged),Nominal encoding
+AgeGroup_Senior,int,One-hot encoded AgeGroup column (Senior),Nominal encoding
