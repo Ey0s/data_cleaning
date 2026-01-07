@@ -43,13 +43,13 @@ class DiabetesDataCleaner:
             count = (self.df[col] == 0).sum()
             print(f"{col}: {count} zeros ({round(count/len(self.df)*100,2)}%)")
 
-        plt.figure(figsize=(15,10))
+        plt.figure(figsize=(25,20))
         self.df[critical_features].hist()
         plt.suptitle("Critical Feature Distributions")
         plt.show()
 
         msno.matrix(self.df)
-        plt.show()
+        plt.show()   
         return self.df
 
     def clean_data(self):
